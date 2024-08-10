@@ -9,9 +9,16 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@aws-sdk/client-bedrock": "^3.624.0",
+    "@aws-sdk/client-bedrock-agent-runtime": "^3.625.0",
+    "@aws-sdk/client-bedrock-runtime": "^3.624.0",
+    "@emotion/react": "^11.13.0",
+    "@emotion/styled": "^11.13.0",
+    "@mui/material": "^5.16.6",
+    "next": "14.2.5",
+    "openai": "^4.54.0",
     "react": "^18",
-    "react-dom": "^18",
-    "next": "14.2.5"
+    "react-dom": "^18"
   },
   "devDependencies": {
     "eslint": "^8",
