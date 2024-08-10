@@ -17,7 +17,7 @@ export default function Home() {
     setMessages((messages) => [
       ...messages,
       { role: 'user', content: message },  // Add the user's message to the chat
-      { role: 'assistant', content: '' },  // Add a placeholder for the assistant's response
+      { role: 'assistant', content: '', citations: [] },  // Add a placeholder for the assistant's response
     ])
 
     // Send the message to the server
@@ -35,17 +35,18 @@ export default function Home() {
       // Function to process the text from the response
       return reader.read().then(function processText({ done, value }) {
         if (done) {
-          return result
+          const responseObject = JSON.parse(result)
+          setMessages((messages) => {
+            let lastMessage = messages[messages.length - 1]  // Get the last message (assistant's placeholder)
+            let otherMessages = messages.slice(0, messages.length - 1)  // Get all other messages
+            return [
+              ...otherMessages,
+              { ...lastMessage, content: responseObject.text, citations: responseObject.citations },
+            ]
+          })
+          return
         }
-        const text = decoder.decode(value || new Uint8Array(), { stream: true })  // Decode the text
-        setMessages((messages) => {
-          let lastMessage = messages[messages.length - 1]  // Get the last message (assistant's placeholder)
-          let otherMessages = messages.slice(0, messages.length - 1)  // Get all other messages
-          return [
-            ...otherMessages,
-            { ...lastMessage, content: lastMessage.content + text },  // Append the decoded text to the assistant's message
-          ]
-        })
+        result += decoder.decode(value || new Uint8Array(), { stream: true })  // Decode the text
         return reader.read().then(processText)  // Continue reading the next chunk of the response
       })
     })
@@ -88,6 +89,21 @@ export default function Home() {
                 p={3}
               >
                 {message.content}
+                {message.citations && (
+                  <Box>
+                    {message.citations.map((citation, index) => (
+                      <Box key={index}>
+                        <Box>{citation.text}</Box>
+                        {citation.references.map((ref, index) => (
+                          <Box key={index}>
+                            <Box>Content: {ref.content}</Box>
+                            <Box>Location: {JSON.stringify(ref.location)}</Box>
+                          </Box>
+                        ))}
+                      </Box>
+                    ))}
+                  </Box>
+                )}
               </Box>
             </Box>
           ))
