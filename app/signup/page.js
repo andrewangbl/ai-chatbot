@@ -1,8 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../../firebase'; // Adjust the path if necessary
+import { signUpUser } from '../../lib/auth'; // Adjust the path if necessary
 import { TextField, Button, Box } from '@mui/material';
 import { useRouter } from 'next/navigation';
 
@@ -13,11 +12,11 @@ export default function SignUp() {
   const router = useRouter();
 
   const handleSignUp = async () => {
-    try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      router.push('/');
-    } catch (error) {
-      setError(error.message);
+    const response = await signUpUser(email, password);
+    if (response.success) {
+      router.push('/signin');
+    } else {
+      setError(response.message);
     }
   };
 

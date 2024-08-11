@@ -1,8 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../firebase';
+import { checkUserAuthenticated } from '../lib/auth'; // Adjust the path if necessary
 import { useRouter } from 'next/navigation';
 import Home from './Home';
 
@@ -11,20 +10,34 @@ export default function ProtectedPage() {
   const router = useRouter();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (!user) {
+    const checkAuth = async () => {
+      const email = localStorage.getItem('userEmail'); // Use localStorage to store and retrieve the user's email
+      console.log('Checking authentication for email:', email);
+
+      if (!email) {
+        console.log('No email found in localStorage, redirecting to sign-in...');
+        router.push('/signin');
+        return;
+      }
+
+      const response = await checkUserAuthenticated(email);
+      console.log('Authentication check response:', response);
+
+      if (!response.success) {
+        console.log('Authentication failed, redirecting to sign-in...');
         router.push('/signin');
       } else {
+        console.log('Authentication succeeded, loading home page...');
         setLoading(false);
       }
-    });
+    };
 
-    return () => unsubscribe();
+    checkAuth();
   }, [router]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>Loading...</div>; // Show a loading message while checking authentication
   }
 
-  return <Home />;
+  return <Home />; // Render the Home component if authenticated
 }

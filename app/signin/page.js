@@ -1,8 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../../firebase'; // Adjust the path if necessary
+import { signInUser } from '../../lib/auth'; // Adjust the path if necessary
 import { TextField, Button, Box } from '@mui/material';
 import { useRouter } from 'next/navigation';
 
@@ -13,11 +12,13 @@ export default function SignIn() {
   const router = useRouter();
 
   const handleSignIn = async () => {
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
+    const response = await signInUser(email, password);
+    if (response.success) {
+      console.log('Sign-in successful, storing email in localStorage...');
+      localStorage.setItem('userEmail', email); // Store the email in localStorage
       router.push('/');
-    } catch (error) {
-      setError(error.message);
+    } else {
+      setError(response.message);
     }
   };
 
