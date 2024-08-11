@@ -1,9 +1,18 @@
 'use client'
 import { Box, Stack, Button, TextField } from "@mui/material";
 import { useState } from "react";
+import markdownit from 'markdown-it'
+import Markdown from 'react-markdown'
+
 
 
 export default function Home() {
+  const md = markdownit({
+    breaks: true,
+    html: true,
+    linkify: true,
+    typographer: true
+  })
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
@@ -97,12 +106,12 @@ export default function Home() {
                 borderRadius={16}
                 p={3}
               >
-                {message.content}
+                <Markdown>{message.content}</Markdown>
                 {message.citations && (
                   <Box>
                     {message.citations.map((citation, index) => (
                       <Box key={index}>
-                        <Box>{citation.text}</Box>
+                        <Box>{md.render(citation.text)}</Box>
                         {citation.references.map((ref, index) => (
                           <Box key={index}>
                             <Box>Content: {ref.content}</Box>
