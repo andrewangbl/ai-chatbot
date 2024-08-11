@@ -7,18 +7,19 @@ export default function Home() {
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
-      content: `Hi I'm a law firm assistant. How can I help you today?`
+      content: `Hi I'm a rental assistant for New York City rentals. How can I help you today?`
     }
   ])
   const [message, setMessage] = useState('')
 
   const sendMessage = async () => {
-    setMessage('')  // Clear the input field
-    setMessages((messages) => [
-      ...messages,
-      { role: 'user', content: message },  // Add the user's message to the chat
-      { role: 'assistant', content: '', citations: [] },  // Add a placeholder for the assistant's response
-    ])
+    console.log("Sending message:", message);
+    setMessage('');  // Clear the input field
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { role: 'user', content: message },
+      { role: 'assistant', content: 'Thinking...', citations: [] },
+    ]);
 
     try {
       const response = await fetch('/api/chat', {
@@ -26,38 +27,37 @@ export default function Home() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ messages: [...messages, { role: 'user', content: message }] }),
+        body: JSON.stringify([...messages, { role: 'user', content: message }]),
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch response');
-      }
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        const chunk = decoder.decode(value);
-        const data = JSON.parse(chunk);
+      const result = await reader.read();
+      const chunk = decoder.decode(result.value);
+      console.log("Received chunk:", chunk);
 
-        setMessages((prevMessages) => {
-          const newMessages = [...prevMessages];
-          newMessages[newMessages.length - 1] = {
-            role: 'assistant',
-            content: data.text,
-            citations: data.citations,
-          };
-          return newMessages;
-        });
-      }
+      const responseObject = JSON.parse(chunk);
+      setMessages((prevMessages) => {
+        const newMessages = [...prevMessages];
+        newMessages[newMessages.length - 1] = {
+          role: 'assistant',
+          content: responseObject.text,
+          // citations: responseObject.citations,
+        };
+        return newMessages;
+      });
     } catch (error) {
-      console.error('Error:', error);
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { role: 'assistant', content: 'An error occurred while processing your request.' },
-      ]);
+      console.error("Error in sendMessage:", error);
+      setMessages((prevMessages) => {
+        const newMessages = [...prevMessages];
+        newMessages[newMessages.length - 1] = {
+          role: 'assistant',
+          content: 'Sorry, an error occurred while processing your request.',
+          citations: [],
+        };
+        return newMessages;
+      });
     }
   }
 
