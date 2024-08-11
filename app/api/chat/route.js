@@ -3,7 +3,9 @@ import { BedrockAgentRuntimeClient, RetrieveAndGenerateCommand } from "@aws-sdk/
 
 const systemPrompt = 'You are an AI-powered customer support agent to answer questions about the rent apartment at New York.';
 const knowledgeBaseId = process.env.AWS_BEDROCK_KNOWLEDGE_BASE_ID;
-const modelArn = "arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-v2:1";
+const modelArn = "arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-sonnet-20240229-v1:0";
+
+// const modelArn = "arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-5-sonnet-20240620-v1:0"
 
 export async function POST(req) {
   const bedrockAgentRuntimeClient = new BedrockAgentRuntimeClient({ region: process.env.AWS_REGION });
