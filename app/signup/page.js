@@ -13,8 +13,9 @@ export default function SignUp() {
 
   const handleSignUp = async () => {
     const response = await signUpUser(email, password);
+    localStorage.setItem('email', email);
     if (response.success) {
-      router.push('/signin');
+      router.push('/');
     } else {
       setError(response.message);
     }

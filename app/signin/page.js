@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { signInUser } from '../../lib/auth'; // Adjust the path if necessary
 import { TextField, Button, Box } from '@mui/material';
 import { useRouter } from 'next/navigation';
@@ -10,6 +10,13 @@ export default function SignIn() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
+
+  useEffect(() => {
+    const email = localStorage.getItem('email');
+    if (email) {
+      router.push('/');
+    }
+  }, []);
 
   const handleSignIn = async () => {
     const response = await signInUser(email, password);

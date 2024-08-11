@@ -11,7 +11,7 @@ export default function ProtectedPage() {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const email = localStorage.getItem('userEmail'); // Use localStorage to store and retrieve the user's email
+      const email = localStorage.getItem('email'); // Use localStorage to store and retrieve the user's email
       console.log('Checking authentication for email:', email);
 
       if (!email) {
