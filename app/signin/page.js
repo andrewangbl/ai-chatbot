@@ -51,7 +51,7 @@ export default function SignIn() {
         Sign In
       </Button>
       <Button onClick={() => router.push('/signup')} sx={{ mt: 2 }}>
-        Don't have an account? Sign Up
+        Don&apos;t have an account? Sign Up
       </Button>
     </Box>
   );

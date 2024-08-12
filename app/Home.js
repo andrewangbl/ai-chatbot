@@ -3,7 +3,10 @@ import { Box, Stack, Button, TextField } from "@mui/material";
 import { useState } from "react";
 import markdownit from 'markdown-it'
 import Markdown from 'react-markdown'
-
+import { IconButton } from '@mui/material';
+import { AttachFile, Send } from '@mui/icons-material';
+import { uploadFile } from "@/lib/auth";
+import { Delete } from '@mui/icons-material';
 
 
 export default function Home() {
@@ -20,10 +23,14 @@ export default function Home() {
     }
   ])
   const [message, setMessage] = useState('')
+  const [file, setFile] = useState(null)
+  
 
-  const sendMessage = async () => {
+  const sendMessage = async (e) => {
+    e.preventDefault();
     console.log("Sending message:", message);
     setMessage('');  // Clear the input field
+    setFile(null)
     setMessages((prevMessages) => [
       ...prevMessages,
       { role: 'user', content: message },
@@ -31,6 +38,10 @@ export default function Home() {
     ]);
 
     try {
+      // Upload file to S3
+      const email = localStorage.getItem('email')
+      await uploadFile(file, email)
+
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: {
@@ -77,6 +88,7 @@ export default function Home() {
     flexDirection='column'
     justifyContent='center'
     alignItems='center'
+    bgcolor='white'
   >
     <Stack
       directon='column'
@@ -127,15 +139,60 @@ export default function Home() {
           ))
         }
       </Stack>
-      <Stack direction='row' spacing={2}>
-        <TextField
-          label='message'
-          fullWidth
-          value={message}
-          onChange={(e)=>setMessage(e.target.value)}
-        />
-        <Button variant="contained" onClick={sendMessage}>Send</Button>
-      </Stack>
+      <form onSubmit={sendMessage}>
+        <Stack direction='row' spacing={2}>
+          <IconButton component='label' type="button" color="primary" >
+            <input type="file" hidden onChange={(e) => {
+              setFile(e.target.files[0])
+              e.target.value = ''
+            }} />
+            <AttachFile />
+          </IconButton>
+          <TextField
+            multiline
+            label='Your Message'
+            autoComplete='off'
+            fullWidth
+            required
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            sx={{
+              '& .MuiInputBase-root': {
+                minHeight: '50px',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'stretch',
+              },
+              '& .MuiInputBase-input': {
+                flexGrow: 1,
+                overflow: 'auto',
+              },
+            }}
+            InputProps={{
+              startAdornment: file && (
+                <Box
+                  component="div"
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    width: '100%',
+                    padding: '8px',
+                    borderBottom: '1px solid rgba(0, 0, 0, 0.23)',
+                  }}
+                >
+                  <Box component="span" sx={{ flexGrow: 1, mr: 1 }}>{file.name}</Box>
+                  <IconButton size="small" onClick={() => setFile(null)}>
+                    <Delete fontSize="small" />
+                  </IconButton>
+                </Box>
+              ),
+            }}
+          />
+          <Button variant="contained" color="primary" type="submit">
+            <Send />
+          </Button>
+        </Stack>
+      </form>
     </Stack>
   </Box>
 }
