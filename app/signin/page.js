@@ -22,7 +22,7 @@ export default function SignIn() {
     const response = await signInUser(email, password);
     if (response.success) {
       console.log('Sign-in successful, storing email in localStorage...');
-      localStorage.setItem('userEmail', email); // Store the email in localStorage
+      localStorage.setItem('email', email); // Store the email in localStorage
       router.push('/');
     } else {
       setError(response.message);

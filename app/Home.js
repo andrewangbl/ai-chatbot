@@ -1,13 +1,12 @@
 'use client'
-import { Box, Stack, Button, TextField } from "@mui/material";
+import { Box, Stack, Button, TextField, IconButton } from "@mui/material";
 import { useState } from "react";
 import markdownit from 'markdown-it'
 import Markdown from 'react-markdown'
-import { IconButton } from '@mui/material';
-import { AttachFile, Send } from '@mui/icons-material';
-import { uploadFile } from "@/lib/auth";
-import { Delete } from '@mui/icons-material';
+import { AttachFile, Send, Delete } from '@mui/icons-material';
+import { useRouter } from 'next/navigation';
 
+import { uploadFile, signOut } from "@/lib/auth";
 
 export default function Home() {
   const md = markdownit({
@@ -24,6 +23,7 @@ export default function Home() {
   ])
   const [message, setMessage] = useState('')
   const [file, setFile] = useState(null)
+  const router = useRouter();
   
 
   const sendMessage = async (e) => {
@@ -80,6 +80,14 @@ export default function Home() {
       });
     }
   }
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      router.push('/signin');
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
 
   return <Box
     width='100vw'
@@ -90,6 +98,14 @@ export default function Home() {
     alignItems='center'
     bgcolor='white'
   >
+    <Button
+      variant="contained"
+      color="secondary"
+      onClick={handleSignOut}
+      sx={{ position: 'absolute', top: 16, right: 16 }}
+    >
+      Sign Out
+    </Button>
     <Stack
       directon='column'
       width='600px'
