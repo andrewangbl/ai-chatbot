@@ -1,37 +1,20 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# NYC Rental Assistant Chatbot
+This project is a Next.js-based chatbot application designed to assist users with New York City rental inquiries. It leverages AWS Bedrock for natural language processing and integrates with various AWS services for authentication, file storage, and database management.
 
-## Getting Started
+## Features
+1. User Authentication: Sign up and sign in functionality using AWS DynamoDB for user management.
+2. Chat Interface: A responsive chat interface for users to interact with the rental assistant.
+3. File Upload: Ability to upload files during the conversation, which are stored in AWS S3.
+4. Real-time Responses: Utilizes AWS Bedrock for generating context-aware responses.
 
-First, run the development server:
+## How It Works
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
-# ai-chatbot
+### User Authentication:
+Users can sign up or sign in using their email and password.
+User credentials are securely stored in AWS DynamoDB.
+### Chat Interface:
+The main chat interface is implemented in the Home component: It uses Material-UI components for a clean and responsive design.
+### Message Handling:
+When a user sends a message, it's processed by the sendMessage function: This function sends the message to the backend API and handles the response.
+### Backend Processing:
+The chat API uses AWS Bedrock Agent Runtime to process the user's input and generate responses.
