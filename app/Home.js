@@ -5,7 +5,7 @@ import markdownit from 'markdown-it'
 import Markdown from 'react-markdown'
 import { AttachFile, Send, Delete } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
-
+import { useTheme } from '@mui/material/styles';
 import { uploadFile, signOut } from "@/lib/auth";
 
 export default function Home() {
@@ -24,6 +24,7 @@ export default function Home() {
   const [message, setMessage] = useState('')
   const [file, setFile] = useState(null)
   const router = useRouter();
+  const theme = useTheme();
   
 
   const sendMessage = async (e) => {
@@ -96,7 +97,7 @@ export default function Home() {
     flexDirection='column'
     justifyContent='center'
     alignItems='center'
-    bgcolor='white'
+    bgcolor={theme.palette.background.default}
   >
     <Button
       variant="contained"
@@ -128,11 +129,12 @@ export default function Home() {
             }>
               <Box
                 bgcolor={
-                  message.role==='assistant'?'primary.main':'secondary.main'
+                  message.role==='assistant'?'primary.main':'secondary.light'
                 }
                 color='white'
                 borderRadius={16}
                 p={3}
+                px={4}
               >
                 <Markdown>{message.content}</Markdown>
                 {message.citations && (
