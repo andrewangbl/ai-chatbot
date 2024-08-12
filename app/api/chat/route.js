@@ -1,3 +1,5 @@
+export const maxDuration = 60;
+
 import { NextResponse } from 'next/server';
 import { BedrockAgentRuntimeClient, RetrieveAndGenerateCommand, InvokeAgentCommand } from "@aws-sdk/client-bedrock-agent-runtime";
 
