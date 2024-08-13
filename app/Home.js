@@ -53,7 +53,10 @@ export default function Home() {
       // await uploadFile(file, email)
 
       // Sliding Window Approach:Get the last 3 messages including the new one (or fewer if there aren't 5 yet)
-      const recentMessages = [...messages.slice(-2), newMessage].filter(Boolean);
+      const recentUserMessages = messages
+      .filter(msg => msg.role === 'user')
+      .slice(-2)
+      .concat(newMessage);
 
       const response = await fetch('/api/chat', {
         method: 'POST',
@@ -61,7 +64,7 @@ export default function Home() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          messages: recentMessages,
+          messages: recentUserMessages,
           language: language,
         }),
       });
@@ -105,6 +108,31 @@ export default function Home() {
     }
   };
 
+  const markdownStyles = `
+    .chatbot-response p {
+      line-height: 1.2;
+    }
+    .chatbot-response ul, .chatbot-response ol {
+      margin-bottom: 1em;
+      padding-left: 1em;
+    }
+    .chatbot-response li {
+      margin-bottom: 0.5em;
+    }
+    .chatbot-response h1, .chatbot-response h2, .chatbot-response h3,
+    .chatbot-response h4, .chatbot-response h5, .chatbot-response h6 {
+      margin-top: 0.3em;
+      margin-bottom: 0.3em;
+    }
+  `;
+
+  useEffect(() => {
+    const chatContainer = document.querySelector('.chat-container');
+    if (chatContainer) {
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+  }, [messages]);
+
   return <Box
     width='100vw'
     height='100vh'
@@ -145,6 +173,8 @@ export default function Home() {
         flexGrow={1}
         overflow='auto'
         maxHeight='100%'
+        className='chat-container'
+        sx={{ scrollBehavior: 'smooth' }}
       >
         {
           messages.map((message, index) => (
@@ -157,10 +187,10 @@ export default function Home() {
                 }
                 color='white'
                 borderRadius={16}
-                p={3}
-                px={4}
+                p={2} // Adjust this value as needed, e.g., p={1.5} or p={2.5}
+                px={3} // This sets horizontal padding, adjust if needed
               >
-                <Markdown>{message.content}</Markdown>
+                <Markdown className="chatbot-response">{message.content}</Markdown>
                 {/* {message.citations && (
                   <Box>
                     {message.citations.map((citation, index) => (
@@ -210,5 +240,6 @@ export default function Home() {
         </Stack>
       </form>
     </Stack>
+    <style jsx global>{markdownStyles}</style>
   </Box>
 }

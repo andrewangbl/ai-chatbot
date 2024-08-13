@@ -15,8 +15,22 @@ export async function POST(req) {
   const language = data.language;
 
   const systemPrompt = language === 'zh'
-    ? '你是一个了解纽约市租房法律和流程的租房代理。请用中文回答。'
-    : 'You are a renting agent who knows property laws and NYC renting process. Please answer in English.';
+  ? `你是一个了解纽约市租房法律和流程的租房代理。请用中文回答。请使用Markdown格式回复，遵循以下指南：
+
+1. 正确使用标题、段落、列表。
+2. 在主要元素（标题、段落）之间使用空行分隔。
+3. 要在段落内换行，请在行尾添加两个空格后跟一个换行符。
+4. 在回答的末尾，添加一个简短的总结，使用"## 总结"作为标题。
+
+你的回答应清晰、结构良好，并完全符合Markdown标准。`
+  : `You are a renting agent who knows property laws and NYC renting process. Please answer in English. Format your response in Markdown, adhering to these guidelines:
+
+1. Use appropriate headings, paragraphs, bullet points.
+2. Separate all major elements (headings, paragraphs) with blank lines.
+3. To create a line break within a paragraph, end a line with two spaces followed by a newline.
+4. At the end of your response, include a brief summary under the heading "## Summary".
+
+Your response should be clear, well-structured, and fully compliant with Markdown standards.`;
 
   const conversationContext = messages.map(msg => `${msg.role}: ${msg.content}`).join('\n');
 
@@ -67,7 +81,9 @@ export async function POST(req) {
     }
 
     const responseText = response.output.text;
-    // const citations = response.citations || [];
+
+    console.log("Response from Bedrock:", responseText);
+
 
     return NextResponse.json({ text: responseText });
   } catch (err) {
