@@ -1,6 +1,6 @@
 'use client'
-import { Box, Stack, Button, TextField, IconButton } from "@mui/material";
-import { useState } from "react";
+import { Box, Stack, Button, TextField, IconButton, Select, MenuItem } from "@mui/material";
+import { useState, useEffect } from "react";
 import markdownit from 'markdown-it'
 import Markdown from 'react-markdown'
 import { AttachFile, Send, Delete } from '@mui/icons-material';
@@ -15,40 +15,55 @@ export default function Home() {
     linkify: true,
     typographer: true
   })
-  const [messages, setMessages] = useState([
-    {
-      role: 'assistant',
-      content: `Hi I'm a rental assistant for New York City rentals. How can I help you today?`
-    }
-  ])
+  const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState('')
   const [file, setFile] = useState(null)
   const router = useRouter();
   const theme = useTheme();
-  
+  const [language, setLanguage] = useState('en');
+
+  useEffect(() => {
+    const initialMessage = language === 'zh'
+      ? '你好，我是纽约市租房助手。今天我能为您提供什么帮助？'
+      : "Hi, I'm a rental assistant for New York City rentals. How can I help you today?";
+
+    setMessages([
+      {
+        role: 'assistant',
+        content: initialMessage
+      }
+    ]);
+  }, [language]);
 
   const sendMessage = async (e) => {
     e.preventDefault();
     console.log("Sending message:", message);
     setMessage('');  // Clear the input field
     setFile(null)
+    const newMessage = { role: 'user', content: message };
     setMessages((prevMessages) => [
       ...prevMessages,
-      { role: 'user', content: message },
-      { role: 'assistant', content: 'Thinking...', citations: [] },
+      newMessage,
+      { role: 'assistant', content: 'Searching...'},
     ]);
 
     try {
       // Upload file to S3
-      const email = localStorage.getItem('email')
-      await uploadFile(file, email)
+      // const email = localStorage.getItem('email')
+      // await uploadFile(file, email)
+
+      // Sliding Window Approach:Get the last 3 messages including the new one (or fewer if there aren't 5 yet)
+      const recentMessages = [...messages.slice(-2), newMessage].filter(Boolean);
 
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify([...messages, { role: 'user', content: message }]),
+        body: JSON.stringify({
+          messages: recentMessages,
+          language: language,
+        }),
       });
 
       const reader = response.body.getReader();
@@ -75,7 +90,7 @@ export default function Home() {
         newMessages[newMessages.length - 1] = {
           role: 'assistant',
           content: 'Sorry, an error occurred while processing your request.',
-          citations: [],
+          // citations: [],
         };
         return newMessages;
       });
@@ -99,14 +114,23 @@ export default function Home() {
     alignItems='center'
     bgcolor={theme.palette.background.default}
   >
-    <Button
-      variant="contained"
-      color="secondary"
-      onClick={handleSignOut}
-      sx={{ position: 'absolute', top: 16, right: 16 }}
-    >
-      Sign Out
-    </Button>
+    <Stack direction="row" spacing={2} sx={{ position: 'absolute', top: 16, right: 16 }}>
+      <Select
+        value={language}
+        onChange={(e) => setLanguage(e.target.value)}
+        size="small"
+      >
+        <MenuItem value="en">English</MenuItem>
+        <MenuItem value="zh">Chinese</MenuItem>
+      </Select>
+      <Button
+        variant="contained"
+        color="secondary"
+        onClick={handleSignOut}
+      >
+        Sign Out
+      </Button>
+    </Stack>
     <Stack
       directon='column'
       width='600px'
@@ -137,7 +161,7 @@ export default function Home() {
                 px={4}
               >
                 <Markdown>{message.content}</Markdown>
-                {message.citations && (
+                {/* {message.citations && (
                   <Box>
                     {message.citations.map((citation, index) => (
                       <Box key={index}>
@@ -151,7 +175,7 @@ export default function Home() {
                       </Box>
                     ))}
                   </Box>
-                )}
+                )} */}
               </Box>
             </Box>
           ))
@@ -159,13 +183,6 @@ export default function Home() {
       </Stack>
       <form onSubmit={sendMessage}>
         <Stack direction='row' spacing={2}>
-          <IconButton component='label' type="button" color="primary" >
-            <input type="file" hidden onChange={(e) => {
-              setFile(e.target.files[0])
-              e.target.value = ''
-            }} />
-            <AttachFile />
-          </IconButton>
           <TextField
             multiline
             label='Your Message'
@@ -185,25 +202,6 @@ export default function Home() {
                 flexGrow: 1,
                 overflow: 'auto',
               },
-            }}
-            InputProps={{
-              startAdornment: file && (
-                <Box
-                  component="div"
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    width: '100%',
-                    padding: '8px',
-                    borderBottom: '1px solid rgba(0, 0, 0, 0.23)',
-                  }}
-                >
-                  <Box component="span" sx={{ flexGrow: 1, mr: 1 }}>{file.name}</Box>
-                  <IconButton size="small" onClick={() => setFile(null)}>
-                    <Delete fontSize="small" />
-                  </IconButton>
-                </Box>
-              ),
             }}
           />
           <Button variant="contained" color="primary" type="submit">
