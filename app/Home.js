@@ -1,5 +1,5 @@
 'use client'
-import { Box, Stack, Button, TextField, IconButton, Select, MenuItem } from "@mui/material";
+import { Box, Stack, Button, TextField, IconButton, Select, MenuItem, Typography } from "@mui/material";
 import { useState, useEffect } from "react";
 import markdownit from 'markdown-it'
 import Markdown from 'react-markdown'
@@ -142,6 +142,23 @@ export default function Home() {
     alignItems='center'
     bgcolor={theme.palette.background.default}
   >
+    <Typography
+      variant="h3"
+      component="h1"
+      gutterBottom
+      sx={{
+        fontWeight: 'bold',
+        color: theme.palette.primary.main,
+        textAlign: 'center',
+        mb: 4,
+        maxWidth: '800px'
+      }}
+    >
+      NYC RentSmart AI 🏙️
+      <Typography variant="subtitle1" sx={{ mt: 1, fontStyle: 'italic' }}>
+        Powered by 20MB+ of Tenant Rights and 30+ NYC Rental Insights
+      </Typography>
+    </Typography>
     <Stack direction="row" spacing={2} sx={{ position: 'absolute', top: 16, right: 16 }}>
       <Select
         value={language}
