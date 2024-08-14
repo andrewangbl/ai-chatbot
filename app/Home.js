@@ -156,7 +156,7 @@ export default function Home() {
     >
       NYC RentSmart AI 🏙️
       <Typography variant="subtitle1" sx={{ mt: 1, fontStyle: 'italic' }}>
-        Powered by 20MB+ Tenants&apos; Rights and 30+ NYC Rental Blog Posts
+        Powered by 20MB+ Tenants&apos; Rights Docs and 30+ NYC Rental Blog Posts
       </Typography>
     </Typography>
     <Stack direction="row" spacing={2} sx={{ position: 'absolute', top: 16, right: 16 }}>
