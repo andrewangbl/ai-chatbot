@@ -25,7 +25,7 @@ export default function Home() {
   useEffect(() => {
     const initialMessage = language === 'zh'
       ? '你好，我是纽约市租房助手。今天我能为您提供什么帮助？'
-      : "Hi, I'm a rental assistant for New York City rentals. How can I help you today?";
+      : "Hi, I&apos;m a rental assistant for New York City rentals. How can I help you today?";
 
     setMessages([
       {
@@ -156,7 +156,7 @@ export default function Home() {
     >
       NYC RentSmart AI 🏙️
       <Typography variant="subtitle1" sx={{ mt: 1, fontStyle: 'italic' }}>
-        Powered by 20MB+ Tenants' Rights and 30+ NYC Rental Blog Posts
+        Powered by 20MB+ Tenants&apos; Rights and 30+ NYC Rental Blog Posts
       </Typography>
     </Typography>
     <Stack direction="row" spacing={2} sx={{ position: 'absolute', top: 16, right: 16 }}>
