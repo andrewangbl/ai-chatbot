@@ -11,7 +11,7 @@ export default function ProtectedPage() {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const email = localStorage.getItem('email'); // Use localStorage to store and retrieve the user's email
+      const email = localStorage.getItem('email');
       console.log('Checking authentication for email:', email);
 
       if (!email) {
@@ -20,15 +20,25 @@ export default function ProtectedPage() {
         return;
       }
 
-      const response = await checkUserAuthenticated(email);
-      console.log('Authentication check response:', response);
+      try {
+        const response = await checkUserAuthenticated(email);
+        console.log('Authentication check response:', response);
 
-      if (!response.success) {
-        console.log('Authentication failed, redirecting to sign-in...');
+        if (!response.success) {
+          if (response.error) {
+            console.error('Authentication error:', response.error);
+          }
+          console.log('Authentication failed, redirecting to sign-in...');
+          localStorage.removeItem('email'); // Clear the email from localStorage
+          router.push('/signin');
+        } else {
+          console.log('Authentication succeeded, loading home page...');
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error('Unexpected error during authentication check:', error);
+        localStorage.removeItem('email');
         router.push('/signin');
-      } else {
-        console.log('Authentication succeeded, loading home page...');
-        setLoading(false);
       }
     };
 

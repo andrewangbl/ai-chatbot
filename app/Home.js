@@ -52,7 +52,9 @@ export default function Home() {
       // const email = localStorage.getItem('email')
       // await uploadFile(file, email)
 
-      // Sliding Window Approach:Get the last 3 messages including the new one (or fewer if there aren't 5 yet)
+      // Sliding Window Approach:
+      // Contain the last 3 usermessages to maintain context
+      // while ensure the performance of RAG semantic search
       const recentUserMessages = messages
       .filter(msg => msg.role === 'user')
       .slice(-2)
